@@ -2,7 +2,7 @@
 
 ## Data Collection & Preprocessing With Python
 
-
-This repository contains Python program to collect League of legends player statistics collection via Riot API.
+- Collect League of legends player statistics collection via Riot API.
+- Preprocess lane and role information to generate five lane information.
 
 *Mainly written by Jiseong Yang and Taeckyung Lee*
