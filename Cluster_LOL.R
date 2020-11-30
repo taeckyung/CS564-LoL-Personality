@@ -1,3 +1,5 @@
+rm(list=ls())
+
 #get data
 clu_df <- read.csv(file = 'lolchampion1116.csv')
 clu_df <- clu_df[,c(2,3,17,33:41)]
@@ -88,40 +90,7 @@ plot(hcst, labels=Sup_df[,1], cex=0.8,main='Support clustering(hclust)',hang=-1,
 rect.hclust(hcst, n)
 hcluster_Sup <- cbind(Sup_df,cluster=cutree(hcst,n))
 
-#K-mean
-nb <- NbClust(Top_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="complete", index="all")
-n <- nb$Best.nc[1]
-kc <- kmeans(Top_df[,c(2:8)], centers = n)
-kcluster_Top<- cbind(Top_df,kc$cluster)
-
-nb <- NbClust(Jg_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="complete", index="all")
-n <- nb$Best.nc[1]
-kc <- kmeans(Jg_df[,c(2:8)], centers = n)
-kcluster_Jg<- cbind(Jg_df,kc$cluster)
-
-nb <- NbClust(Mid_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="complete", index="all")
-n <- nb$Best.nc[1]
-kc <- kmeans(Mid_df[,c(2:8)], centers = n)
-kcluster_Mid<- cbind(Mid_df,kc$cluster)
-
-nb <- NbClust(Bot_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="complete", index="all")
-n <- nb$Best.nc[1]
-kc <- kmeans(Bot_df[,c(2:8)], centers = n)
-kcluster_Bot<- cbind(Bot_df,kc$cluster)
-
-nb <- NbClust(Sup_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="complete", index="all")
-n <- nb$Best.nc[1]
-kc <- kmeans(Sup_df[,c(2:8)], centers = n)
-kcluster_Sup<- cbind(Sup_df,kc$cluster)
-
-#get key value pair champion key and kcluster, hcluster
-kv_df_Top <- list();kv_df_Jg <- list();kv_df_Mid <- list();kv_df_Bot <- list();kv_df_Sup <- list();
-kv_df_Top[Top_key] <- kcluster_Top$`kc$cluster`
-kv_df_Jg[Jg_key] <- kcluster_Jg$`kc$cluster`
-kv_df_Mid[Mid_key] <- kcluster_Mid$`kc$cluster`
-kv_df_Bot[Bot_key] <- kcluster_Bot$`kc$cluster`
-kv_df_Sup[Sup_key] <- kcluster_Sup$`kc$cluster`
-
+#get key value pair champion key and hcluster
 kv_df_TopH <- list();kv_df_JgH <- list();kv_df_MidH <- list();kv_df_BotH <- list();kv_df_SupH <- list();
 kv_df_TopH[Top_key] <- hcluster_Top$cluster
 kv_df_JgH[Jg_key] <- hcluster_Jg$cluster
@@ -130,41 +99,6 @@ kv_df_BotH[Bot_key] <- hcluster_Bot$cluster
 kv_df_SupH[Sup_key] <- hcluster_Sup$cluster
 
 #######################put 10 in other cluster#######################
-i = 1
-for (e in kv_df_Top) {
-  if (is.null(e)) {
-    kv_df_Top[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_Jg) {
-  if (is.null(e)) {
-    kv_df_Jg[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_Mid) {
-  if (is.null(e)) {
-    kv_df_Mid[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_Bot) {
-  if (is.null(e)) {
-    kv_df_Bot[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_Sup) {
-  if (is.null(e)) {
-    kv_df_Sup[i] = 10
-  }
-  i = i+1
-}
 i = 1
 for (e in kv_df_TopH) {
   if (is.null(e)) {

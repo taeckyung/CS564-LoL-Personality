@@ -64,4 +64,4 @@ for summoner in target_summoners:
 	                                      get_mbti(target_survey_df[['EI', 'SN', 'TF', 'JP']])])
 
 result_df = pd.DataFrame(result_df, columns=['champ1', 'champ2', 'champ3', 'lane', 'gender', 'born_year', 'game_started_year', 'MBTI'])
-result_df.to_csv('Roll_Data.csv', encoding="utf-8-sig", index=False)
+result_df.to_csv('Roll_Data.csv', index=False)
