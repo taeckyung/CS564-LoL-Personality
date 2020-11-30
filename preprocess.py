@@ -59,3 +59,9 @@ print(len(match_df[match_df['new_lane'] == 'None']))
 print(len(match_df[match_df['new_lane'] != 'None']))
 
 match_df.to_csv(args.preprocess, encoding="utf-8-sig")
+
+ls = match_df.groupby(['name'])
+ls = (ls.size() > 50).index
+
+df_over50 = match_df[match_df['name'].isin(ls)]
+df_over50.to_csv('over_50.csv', encoding="utf-8-sig")
