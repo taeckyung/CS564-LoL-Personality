@@ -23,13 +23,21 @@ def get_mbti(x: pd.Series) -> str:
 
 
 def parse_year(x):
-	if isinstance(x, str):
-		return 2012
-	else:
+	if isinstance(x, int) or isinstance(x, float):
+		return None
+	elif isinstance(x, str):
 		try:
-			return int(x)
+			return int(x[0:4])
 		except ValueError:
 			return None
+	return None
+
+
+def parse_gender(x):
+	if x == '남자':
+		return 'male'
+	else:
+		return 'female'
 
 
 print(survey_df.head())
@@ -49,7 +57,11 @@ for summoner in target_summoners:
 	most_lane = target_match_df['new_lane'].value_counts(sort=True).index[0]
 	most_champs = target_match_df['champion'].value_counts(sort=True).index[0:3]
 
-	result_df.append([summoner] + list(most_champs) + [most_lane, target_survey_df['gender'], target_survey_df['born_year'], parse_year(target_survey_df['game_started_year']), get_mbti(target_survey_df[['EI', 'SN', 'TF', 'JP']])])
+	result_df.append(list(most_champs) + [most_lane,
+	                                      parse_gender(target_survey_df['gender']),
+	                                      parse_year(target_survey_df['born_year']),
+	                                      parse_year(target_survey_df['game_started_year']),
+	                                      get_mbti(target_survey_df[['EI', 'SN', 'TF', 'JP']])])
 
-result_df = pd.DataFrame(result_df, columns=['name', 'champ1', 'champ2', 'champ3', 'lane', 'gender', 'born_year', 'game_started_year', 'MBTI'])
-result_df.to_csv('Roll_Data.csv', encoding="utf-8-sig")
+result_df = pd.DataFrame(result_df, columns=['champ1', 'champ2', 'champ3', 'lane', 'gender', 'born_year', 'game_started_year', 'MBTI'])
+result_df.to_csv('Roll_Data.csv', encoding="utf-8-sig", index=False)
