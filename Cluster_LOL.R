@@ -1,8 +1,10 @@
 rm(list=ls())
 
+library(hash)
+
 #get data
-clu_df <- read.csv(file = 'data/lolchampion1116.csv')
-clu_df <- clu_df[,c(2,3,17,33:41)]
+clu_df <- read.csv(file = 'data/lolchampion1201.csv')
+clu_df <- clu_df[,c(2,3,17,33:44)]
 key <- clu_df[,c(2)]
 Top_df <- data.frame();Jg_df <- data.frame();Mid_df <- data.frame();Bot_df <- data.frame();Sup_df <- data.frame();
 
@@ -12,19 +14,19 @@ for (row in 1:nrow(clu_df)){
   l2 <- clu_df[row, "Second.lane"]
   l3 <- clu_df[row, "X.1"]
 
-  if (l1 == "Top" | l2 =="Top" | l3 == "Top"){
+  if (l1 == "TOP" | l2 =="TOP" | l3 == "TOP"){
     Top_df <- rbind(Top_df, clu_df[row,])
   }
-  if (l1 == "Jg" | l2 == "Jg" | l3 == "Jg"){
+  if (l1 == "JUNGLE" | l2 == "JUNGLE" | l3 == "JUNGLE"){
     Jg_df <- rbind(Jg_df, clu_df[row,])
   }
-  if (l1 == "Mid"| l2 == "Mid" | l3 == "Mid"){
+  if (l1 == "MID"| l2 == "MID" | l3 == "MID"){
     Mid_df <- rbind(Mid_df, clu_df[row,])
   }
-  if (l1 == "Bot" | l2 == "Bot" | l3 == "Bot"){
+  if (l1 == "ADC" | l2 == "ADC" | l3 == "ADC"){
     Bot_df <- rbind(Bot_df, clu_df[row,])
   }
-  if (l1 == "Sup" | l2 == "Sup" | l3 == "Sup"){
+  if (l1 == "SUPPORT" | l2 == "SUPPORT" | l3 == "SUPPORT"){
     Sup_df <- rbind(Sup_df, clu_df[row,])
   }
 }
@@ -43,6 +45,7 @@ Mid_df[,c(2:8)] <- scale(Mid_df[,c(2:8)])
 Bot_df[,c(2:8)] <- scale(Bot_df[,c(2:8)])
 Sup_df[,c(2:8)] <- scale(Sup_df[,c(2:8)])
 
+Top_df = Top_df[Top_df$id != 'Gnar',]
 Bot_df = Bot_df[Bot_df$id != 'Yasuo',]
 Bot_df = Bot_df[Bot_df$id != 'Senna',]
 Bot_df = Bot_df[Bot_df$id != 'Swain',]
@@ -296,20 +299,26 @@ chisq.test(tb_cb)
 chisq.test(tb_ct)
 chisq.test(tb_ci)
 
-#######################Champ&line&MBTI by hclustering#######################
-ChampMBTI_TopH<-data.frame();ChampMBTI_JgH<-data.frame();ChampMBTI_MidH<-data.frame();ChampMBTI_BotH<-data.frame();ChampMBTI_SupH<-data.frame();
+#### Generate data.frame of champion-MBTI-cluster for each lane ####
+key_value_hash = hash()
+key_value_hash[["TOP"]] = kv_df_TopH
+key_value_hash[["JUNGLE"]] = kv_df_JgH
+key_value_hash[["MID"]] = kv_df_MidH
+key_value_hash[["ADC"]] = kv_df_BotH
+key_value_hash[["SUPPORT"]] = kv_df_SupH
+
+ChampMBTI_Cluster = hash()
+for (lane in c("TOP", "JUNGLE", "MID", "ADC", "SUPPORT")) {
+  ChampMBTI_Cluster[[lane]] = data.frame()
+}
 
 cluster_agree_2 = 0
 cluster_agree_3 = 0
 
 for (row in 1:nrow(ChampLaneMBTI)){
-  champ1 <- ChampLaneMBTI[row, "champ1"]
-  champ2 <- ChampLaneMBTI[row, "champ2"]
-  champ3 <- ChampLaneMBTI[row, "champ3"]
-  
-  keyChamp1 <- as.integer(champ1)
-  keyChamp2 <- as.integer(champ2)
-  keyChamp3 <- as.integer(champ3)
+  champs = list(ChampLaneMBTI[row, "champ1"],
+                ChampLaneMBTI[row, "champ2"],
+                ChampLaneMBTI[row, "champ3"])
   
   lane <- ChampLaneMBTI[row, "lane"]
   M <- ChampLaneMBTI[row, "M"]
@@ -317,30 +326,17 @@ for (row in 1:nrow(ChampLaneMBTI)){
   T <- ChampLaneMBTI[row, "T"]
   I <- ChampLaneMBTI[row, "I"]
   
-  clusters = list()
+  clusters = list(key_value_hash[[lane]][[as.integer(champs[1])]],
+                  key_value_hash[[lane]][[as.integer(champs[2])]],
+                  key_value_hash[[lane]][[as.integer(champs[3])]])
+  # real_clusters = list()
   
-  if (lane == "TOP"){
-    clusters = list(kv_df_TopH[keyChamp1], kv_df_TopH[keyChamp2], kv_df_TopH[keyChamp3])
-    ChampMBTI_TopH <- rbind(ChampMBTI_TopH, c(champ1, M, B, T, I, kv_df_TopH[keyChamp1], lane))
+  for (i in 1:3) {
+    if (as.integer(clusters[i]) != 10) {
+      ChampMBTI_Cluster[[lane]] = rbind(ChampMBTI_Cluster[[lane]], c(champs[i], M, B, T, I, clusters[i], lane))
+      # real_clusters = rbind(real_clusters, clusters[i])
+    }
   }
-  if (lane == "JUNGLE"){
-    clusters = list(kv_df_JgH[keyChamp1], kv_df_JgH[keyChamp2], kv_df_JgH[keyChamp3])
-    ChampMBTI_JgH <- rbind(ChampMBTI_JgH, c(champ1, M, B, T, I, kv_df_JgH[keyChamp1], lane))
-  }
-  if (lane == "MID"){
-    clusters = list(kv_df_MidH[keyChamp1], kv_df_MidH[keyChamp2], kv_df_MidH[keyChamp3])
-    ChampMBTI_MidH <- rbind(ChampMBTI_MidH, c(champ1, M, B, T, I, kv_df_MidH[keyChamp1], lane))
-  }
-  if (lane == "ADC"){
-    clusters = list(kv_df_BotH[keyChamp1], kv_df_BotH[keyChamp2], kv_df_BotH[keyChamp3])
-    ChampMBTI_BotH <- rbind(ChampMBTI_BotH, c(champ1, M, B, T, I, kv_df_BotH[keyChamp1], lane))
-  }
-  if (lane == "SUPPORT"){
-    clusters = list(kv_df_SupH[keyChamp1], kv_df_SupH[keyChamp2], kv_df_SupH[keyChamp3])
-    ChampMBTI_SupH <- rbind(ChampMBTI_SupH, c(champ1, M, B, T, I, kv_df_SupH[keyChamp1], lane))
-  }
-  
-  print(clusters)
   if (length(unique(clusters)) == 1) {
     cluster_agree_2 = cluster_agree_2 + 1
     cluster_agree_3 = cluster_agree_3 + 1
@@ -350,38 +346,53 @@ for (row in 1:nrow(ChampLaneMBTI)){
   }
 }
 
+# How does most champions agree with each other? (i.e. do most champions lie in same cluster?)
+nrow(ChampLaneMBTI)
 cluster_agree_2
 cluster_agree_3
-nrow(ChampMBTI)
 
+#### Generate tables for each clusters in each lane ####
 
-names(ChampMBTI_TopH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_JgH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_MidH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_BotH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_SupH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");
-#table cluster, M,B,T,I
-tb_cTm <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$M);tb_cTb <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$B);tb_cTt <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$T);tb_cTi <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$I);
-tb_cJm <- table(ChampMBTI_JgH$cluster, ChampMBTI_JgH$M);tb_cJb <- table(ChampMBTI_JgH$cluster, ChampMBTI_JgH$B);tb_cJt <- table(ChampMBTI_JgH$cluster, ChampMBTI_JgH$T);tb_cJi <- table(ChampMBTI_JgH$cluster, ChampMBTI_JgH$I);
-tb_cMm <- table(ChampMBTI_MidH$cluster, ChampMBTI_MidH$M);tb_cMb <- table(ChampMBTI_MidH$cluster, ChampMBTI_MidH$B);tb_cMt <- table(ChampMBTI_MidH$cluster, ChampMBTI_MidH$T);tb_cMi <- table(ChampMBTI_MidH$cluster, ChampMBTI_MidH$I);
-tb_cBm <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$M);tb_cBb <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$B);tb_cBt <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$T);tb_cBi <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$I);
-tb_cSm <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$M);tb_cSb <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$B);tb_cSt <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$T);tb_cSi <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$I);
+per_line_tables = hash()
 
-table_list = list(
-  tb_cTm, tb_cTb, tb_cTt, tb_cTi,
-  tb_cJm, tb_cJb, tb_cJt, tb_cJi,
-  tb_cMm, tb_cMb, tb_cMt, tb_cMi,
-  tb_cBm, tb_cBb, tb_cBt, tb_cBi,
-  tb_cSm, tb_cSb, tb_cSt, tb_cSi
-)
-
-count_01 = 0
-count_005 = 0
-for (tb in table_list) {
-  p_value = chisq.test(tb)$p.value
-  if (p_value <= 0.05) {
-    count_005 = count_005 + 1
-  }
-  if (p_value <= 0.1) {
-    count_01 = count_01 + 1
+for (lane in c("TOP", "JUNGLE", "MID", "ADC", "SUPPORT")) {
+  names(ChampMBTI_Cluster[[lane]]) <- c("champ", "M", "B", "T", "I", "cluster", "lane")
+  per_line_tables[[lane]] = hash()
+  for (mbti_type in c("M", "B", "T", "I")) {
+    temp_tb = table(ChampMBTI_Cluster[[lane]]$cluster, ChampMBTI_Cluster[[lane]][[mbti_type]])
+    rownames(temp_tb) = lapply(rownames(temp_tb), function(x) paste(lane, x, sep="_"))
+    per_line_tables[[lane]][[mbti_type]] = temp_tb
+    
+    print(paste(lane, mbti_type, sep="_"))
+    print(chisq.test(temp_tb))
   }
 }
-count_005
-count_01
+
+
+#### Merge clusters in same lane ####
+
+merged_tables = hash()
+for (mbti_type in c("M", "B", "T", "I")) {
+  merged_tables[[mbti_type]] = rbind(per_line_tables[["TOP"]][[mbti_type]],
+                                per_line_tables[["JUNGLE"]][[mbti_type]],
+                                per_line_tables[["MID"]][[mbti_type]],
+                                per_line_tables[["ADC"]][[mbti_type]],
+                                per_line_tables[["SUPPORT"]][[mbti_type]]
+                                )
+}
+
+
+#### Get statistics for each merged table in MBTI types ####
+
+merged_tables[["M"]]
+chisq.test(merged_tables[["M"]])
+
+merged_tables[["B"]]
+chisq.test(merged_tables[["B"]])
+
+merged_tables[["T"]]
+chisq.test(merged_tables[["T"]])
+
+merged_tables[["I"]]
+chisq.test(merged_tables[["I"]])
 
