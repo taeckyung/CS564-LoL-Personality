@@ -43,6 +43,10 @@ Mid_df[,c(2:8)] <- scale(Mid_df[,c(2:8)])
 Bot_df[,c(2:8)] <- scale(Bot_df[,c(2:8)])
 Sup_df[,c(2:8)] <- scale(Sup_df[,c(2:8)])
 
+Bot_df = Bot_df[Bot_df$id != 'Yasuo',]
+Bot_df = Bot_df[Bot_df$id != 'Senna',]
+Bot_df = Bot_df[Bot_df$id != 'Swain',]
+
 #h clustering
 library(cluster);library(NbClust);
 
@@ -56,7 +60,7 @@ hclust_method = "complete"
 
 #top
 nb <- NbClust(Top_df[,c(2:8)], distance=NbClust_distance, min.nc=2, max.nc=10, method=hclust_method, index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 ds <- dist(Top_df, method=NbClust_distance)
 hcst <- hclust(ds, method=hclust_method)
 plot(hcst, labels=Top_df[,1], cex=0.8,main='Top clustering(hclust)',tip.color=c(1:n)[cutree(hcst,n)],hang=-1,xlab='Champion')
@@ -65,7 +69,7 @@ hcluster_Top <- cbind(Top_df,cluster=cutree(hcst,n))
 
 #jungle
 nb <- NbClust(Jg_df[,c(2:8)], distance=NbClust_distance, min.nc=2, max.nc=10, method=hclust_method, index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 ds <- dist(Jg_df, method=NbClust_distance)
 hcst <- hclust(ds, method=hclust_method)
 plot(hcst, labels=Jg_df[,1], cex=0.8,main='Jungle clustering(hclust)',hang=-1,xlab='Champion')
@@ -74,7 +78,7 @@ hcluster_Jg <- cbind(Jg_df,cluster=cutree(hcst,n))
 
 #mid
 nb <- NbClust(Mid_df[,c(2:8)], distance=NbClust_distance, min.nc=2, max.nc=10, method=hclust_method, index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 ds <- dist(Mid_df, method=NbClust_distance)
 hcst <- hclust(ds, method=hclust_method)
 plot(hcst, labels=Mid_df[,1], cex=0.8,main='Mid clustering(hclust)',hang=-1,xlab='Champion')
@@ -82,17 +86,17 @@ rect.hclust(hcst, n)
 hcluster_Mid <- cbind(Mid_df,cluster=cutree(hcst,n))
 
 # bottom
-nb <- NbClust(Bot_df[,c(2:8)], distance=NbClust_distance, min.nc=2, max.nc=10, method=hclust_method, index="all")
-n <- nb$Best.nc[1]
+nb <- NbClust(Bot_df[,c(2:8)], distance=NbClust_distance, min.nc=2, max.nc=4, method=hclust_method, index="all")
+n <- max(nb$Best.partition)
 ds <- dist(Bot_df, method=NbClust_distance)
 hcst <- hclust(ds, method=hclust_method)
 plot(hcst, labels=Bot_df[,1], cex=0.8,main='Bottom clustering(hclust)',hang=-1,xlab='Champion')
-rect.hclust(hcst, n)
-hcluster_Bot <- cbind(Bot_df,cluster=cutree(hcst,n))
+rect.hclust(hcst, 2)
+hcluster_Bot <- cbind(Bot_df,cluster=cutree(hcst,2))
 
 # support
 nb <- NbClust(Sup_df[,c(2:8)], distance=NbClust_distance, min.nc=2, max.nc=10, method=hclust_method, index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 ds <- dist(Sup_df, method=NbClust_distance)
 hcst <- hclust(ds, method=hclust_method)
 plot(hcst, labels=Sup_df[,1], cex=0.8,main='Support clustering(hclust)',hang=-1,xlab='Champion')
@@ -102,27 +106,27 @@ hcluster_Sup <- cbind(Sup_df,cluster=cutree(hcst,n))
 
 #K-mean
 nb <- NbClust(Top_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="kmeans", index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 kc <- kmeans(Top_df[,c(2:8)], centers = n)
 kcluster_Top<- cbind(Top_df,kc$cluster)
 
 nb <- NbClust(Jg_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="kmeans", index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 kc <- kmeans(Jg_df[,c(2:8)], centers = n)
 kcluster_Jg<- cbind(Jg_df,kc$cluster)
 
 nb <- NbClust(Mid_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="kmeans", index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 kc <- kmeans(Mid_df[,c(2:8)], centers = n)
 kcluster_Mid<- cbind(Mid_df,kc$cluster)
 
 nb <- NbClust(Bot_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="kmeans", index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 kc <- kmeans(Bot_df[,c(2:8)], centers = n)
 kcluster_Bot<- cbind(Bot_df,kc$cluster)
 
 nb <- NbClust(Sup_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="kmeans", index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 kc <- kmeans(Sup_df[,c(2:8)], centers = n)
 kcluster_Sup<- cbind(Sup_df,kc$cluster)
 
@@ -220,12 +224,13 @@ for (e in kv_df_SupH) {
 clu_df <- clu_df[,c(1,3,7:12)]
 clu_df[,c(2:8)] <- scale(clu_df[,c(2:8)])
 
-ds <- dist(clu_df, method="euclidean")
-hcst <- hclust(ds, method="complete")
-# plot(hcst, labels=clu_df[,1], cex=0.8)
+ds <- dist(clu_df, method=NbClust_distance)
+hcst <- hclust(ds, method=hclust_method)
+plot(hcst, labels=clu_df[,1], cex=0.8)
+rect.hclust(hcst, n)
 
 nb <- NbClust(clu_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="kmeans", index="all")
-n <- nb$Best.nc[1]
+n <- max(nb$Best.partition)
 kc <- kmeans(clu_df[,c(2:8)], centers = n)
 kcluster_All<- cbind(clu_df,kc$cluster)
 
@@ -294,32 +299,62 @@ chisq.test(tb_ci)
 #######################Champ&line&MBTI by hclustering#######################
 ChampMBTI_TopH<-data.frame();ChampMBTI_JgH<-data.frame();ChampMBTI_MidH<-data.frame();ChampMBTI_BotH<-data.frame();ChampMBTI_SupH<-data.frame();
 
+cluster_agree_2 = 0
+cluster_agree_3 = 0
 
-for (row in 1:nrow(ChampMBTI)){
-  champ1 <- ChampMBTI[row, "champ1"]
+for (row in 1:nrow(ChampLaneMBTI)){
+  champ1 <- ChampLaneMBTI[row, "champ1"]
+  champ2 <- ChampLaneMBTI[row, "champ2"]
+  champ3 <- ChampLaneMBTI[row, "champ3"]
+  
   keyChamp1 <- as.integer(champ1)
-  lane <- ChampMBTI[row, "lane"]
-  M <- ChampMBTI[row, "M"]
-  B <- ChampMBTI[row, "B"]
-  T <- ChampMBTI[row, "T"]
-  I <- ChampMBTI[row, "I"]
+  keyChamp2 <- as.integer(champ2)
+  keyChamp3 <- as.integer(champ3)
+  
+  lane <- ChampLaneMBTI[row, "lane"]
+  M <- ChampLaneMBTI[row, "M"]
+  B <- ChampLaneMBTI[row, "B"]
+  T <- ChampLaneMBTI[row, "T"]
+  I <- ChampLaneMBTI[row, "I"]
+  
+  clusters = list()
   
   if (lane == "TOP"){
+    clusters = list(kv_df_TopH[keyChamp1], kv_df_TopH[keyChamp2], kv_df_TopH[keyChamp3])
     ChampMBTI_TopH <- rbind(ChampMBTI_TopH, c(champ1, M, B, T, I, kv_df_TopH[keyChamp1], lane))
   }
   if (lane == "JUNGLE"){
+    clusters = list(kv_df_JgH[keyChamp1], kv_df_JgH[keyChamp2], kv_df_JgH[keyChamp3])
     ChampMBTI_JgH <- rbind(ChampMBTI_JgH, c(champ1, M, B, T, I, kv_df_JgH[keyChamp1], lane))
   }
   if (lane == "MID"){
+    clusters = list(kv_df_MidH[keyChamp1], kv_df_MidH[keyChamp2], kv_df_MidH[keyChamp3])
     ChampMBTI_MidH <- rbind(ChampMBTI_MidH, c(champ1, M, B, T, I, kv_df_MidH[keyChamp1], lane))
   }
   if (lane == "ADC"){
+    clusters = list(kv_df_BotH[keyChamp1], kv_df_BotH[keyChamp2], kv_df_BotH[keyChamp3])
     ChampMBTI_BotH <- rbind(ChampMBTI_BotH, c(champ1, M, B, T, I, kv_df_BotH[keyChamp1], lane))
   }
   if (lane == "SUPPORT"){
+    clusters = list(kv_df_SupH[keyChamp1], kv_df_SupH[keyChamp2], kv_df_SupH[keyChamp3])
     ChampMBTI_SupH <- rbind(ChampMBTI_SupH, c(champ1, M, B, T, I, kv_df_SupH[keyChamp1], lane))
   }
+  
+  print(clusters)
+  if (length(unique(clusters)) == 1) {
+    cluster_agree_2 = cluster_agree_2 + 1
+    cluster_agree_3 = cluster_agree_3 + 1
+  }
+  else if (length(unique(clusters)) == 2) {
+    cluster_agree_2 = cluster_agree_2 + 1
+  }
 }
+
+cluster_agree_2
+cluster_agree_3
+nrow(ChampMBTI)
+
+
 names(ChampMBTI_TopH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_JgH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_MidH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_BotH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_SupH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");
 #table cluster, M,B,T,I
 tb_cTm <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$M);tb_cTb <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$B);tb_cTt <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$T);tb_cTi <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$I);
@@ -349,3 +384,4 @@ for (tb in table_list) {
 }
 count_005
 count_01
+

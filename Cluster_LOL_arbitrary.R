@@ -19,10 +19,6 @@ total_df[["SUPPORT"]] = list()
 for (row in 1:nrow(clu_df)){
   champ_id = as.character(clu_df[row, "key"])
   
-  if (champ_id == '875') {
-    print(clu_df[row,])
-  }
-  
   l1 <- clu_df[row, "lane"]
   l2 <- clu_df[row, "Second.lane"]
   l3 <- clu_df[row, "X.1"]
@@ -33,31 +29,13 @@ for (row in 1:nrow(clu_df)){
   
   for (lane in names(total_df)) {
     if (l1 == lane) {
-      total_df[[lane]][[champ_id]] = c1
-      if (champ_id == '875') {
-        print(lane)
-        print(champ_id)
-        print(c1)
-        print(total_df[[lane]][[champ_id]])
-      }
+      total_df[[lane]][champ_id] = c1
     }
     if (l2 == lane) {
-      total_df[[lane]][[champ_id]] = c2
-      if (champ_id == '875') {
-        print(lane)
-        print(champ_id)
-        print(c1)
-        print(total_df[[lane]][[champ_id]])
-      }
+      total_df[[lane]][champ_id] = c2
     }
     if (l3 == lane) {
-      total_df[[lane]][[champ_id]] = c3
-      if (champ_id == '875') {
-        print(lane)
-        print(champ_id)
-        print(c1)
-        print(total_df[[lane]][[champ_id]])
-      }
+      total_df[[lane]][champ_id] = c3
     }
   }
 }
@@ -72,6 +50,10 @@ names(df) <- c("champ1", "champ2", "champ3", "lane", "gender", "born_year", "gam
 #######################preprocess data frame#######################
 ChampLaneMBTI_df <- df[,c(1, 2, 3, 4, 8)]
 ChampLaneMBTI <- data.frame()
+
+cluster_agree_2 = 0
+cluster_agree_3 = 0
+
 for (row in 1:nrow(ChampLaneMBTI_df)){
   lane <- ChampLaneMBTI_df[row, "lane"]
   mbti <- ChampLaneMBTI_df[row, "MBTI"]
@@ -87,16 +69,17 @@ for (row in 1:nrow(ChampLaneMBTI_df)){
                   total_df[[lane]][[as.character(M2)]],
                   total_df[[lane]][[as.character(M3)]])
   
+  if (length(unique(clusters)) == 1) {
+    cluster_agree_2 = cluster_agree_2 + 1
+    cluster_agree_3 = cluster_agree_3 + 1
+  }
+  else if (length(unique(clusters)) == 2) {
+    cluster_agree_2 = cluster_agree_2 + 1
+  }
+  
+  
   for (cluster in clusters) {
     if ((lane != "None") & (!is.null(cluster))) {
-      
-      if ((lane != "None") & (!is.null(cluster)) &
-          ((lane == "TOP"))) {
-        ChampLaneMBTI <- rbind(ChampLaneMBTI, c(lane, M1, M2, M3, mbti1, mbti2, mbti3, mbti4, cluster))
-      }
-      else {
-        print(ChampLaneMBTI_df[row,])
-      }
       ChampLaneMBTI <- rbind(ChampLaneMBTI, c(lane, M1, M2, M3, mbti1, mbti2, mbti3, mbti4, cluster))
     }
     else {
@@ -106,7 +89,8 @@ for (row in 1:nrow(ChampLaneMBTI_df)){
 }
 names(ChampLaneMBTI) <- c("lane", "champ1","champ2","champ3", "M", "B", "T", "I", "Cluster")
 ChampLaneMBTI
-
+cluster_agree_2
+cluster_agree_3
 
 final_m = table(lane_df$M)
 final_b = table(lane_df$B)
