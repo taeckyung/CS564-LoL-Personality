@@ -384,16 +384,36 @@ for (mbti_type in c("M", "B", "T", "I")) {
 
 
 #### Get statistics for each merged table in MBTI types ####
+library(grid); library(vcd)
 
 merged_tables[["M"]]
 chisq.test(merged_tables[["M"]])
+mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
+       direction = "v",
+       gp_varnames = gpar(fontsize = 14, fontface = 1),
+       gp_labels = gpar(fontsize = 6))
+
 
 merged_tables[["B"]]
 chisq.test(merged_tables[["B"]])
+mosaic(merged_tables[["B"]], shade = TRUE, legend = TRUE,
+       direction = "v",
+       gp_varnames = gpar(fontsize = 14, fontface = 1),
+       gp_labels = gpar(fontsize = 6))
+
 
 merged_tables[["T"]]
 chisq.test(merged_tables[["T"]])
+mosaic(merged_tables[["T"]], shade = TRUE, legend = TRUE,
+       direction = "v",
+       gp_varnames = gpar(fontsize = 14, fontface = 1),
+       gp_labels = gpar(fontsize = 6))
+
 
 merged_tables[["I"]]
 chisq.test(merged_tables[["I"]])
+mosaic(merged_tables[["I"]], shade = TRUE, legend = TRUE,
+       direction = "v",
+       gp_varnames = gpar(fontsize = 14, fontface = 1),
+       gp_labels = gpar(fontsize = 6))
 
