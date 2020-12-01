@@ -55,13 +55,16 @@ for summoner in target_summoners:
 	target_survey_df = target_survey_df.iloc[0]
 
 	most_lane = target_match_df['new_lane'].value_counts(sort=True).index[0]
-	most_champs = target_match_df['champion'].value_counts(sort=True).index[0:3]
+	most_champs = list(target_match_df[target_match_df['new_lane'] == most_lane]['champion'].value_counts(sort=True).index[0:3])
+	# most_lane = target_match_df[target_match_df['champion'] == most_champs[0]]['new_lane'].value_counts(sort=True).index[0]
 
-	result_df.append(list(most_champs) + [most_lane,
-	                                      parse_gender(target_survey_df['gender']),
-	                                      parse_year(target_survey_df['born_year']),
-	                                      parse_year(target_survey_df['game_started_year']),
-	                                      get_mbti(target_survey_df[['EI', 'SN', 'TF', 'JP']])])
+	result_df.append(most_champs +
+	                 [most_lane,
+	                  parse_gender(target_survey_df['gender']),
+	                  parse_year(target_survey_df['born_year']),
+	                  parse_year(target_survey_df['game_started_year']),
+	                  get_mbti(target_survey_df[['EI', 'SN', 'TF', 'JP']])
+	                  ])
 
 result_df = pd.DataFrame(result_df, columns=['champ1', 'champ2', 'champ3', 'lane', 'gender', 'born_year', 'game_started_year', 'MBTI'])
 result_df.to_csv('Roll_Data.csv', index=False)

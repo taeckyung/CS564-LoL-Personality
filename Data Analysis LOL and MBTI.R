@@ -140,6 +140,23 @@ tb_cMm <- table(ChampMBTI_MidH$cluster, ChampMBTI_MidH$M);tb_cMb <- table(ChampM
 tb_cBm <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$M);tb_cBb <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$B);tb_cBt <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$T);tb_cBi <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$I);
 tb_cSm <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$M);tb_cSb <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$B);tb_cSt <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$T);tb_cSi <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$I);
 
+table_list = list(
+  tb_cTm, tb_cTb, tb_cTt, tb_cTi,
+  tb_cJm, tb_cJb, tb_cJt, tb_cJi,
+  tb_cMm, tb_cMb, tb_cMt, tb_cMi,
+  tb_cBm, tb_cBb, tb_cBt, tb_cBi,
+  tb_cSm, tb_cSb, tb_cSt, tb_cSi
+)
+
+count = 0
+for (tb in table_list) {
+  p_value = chisq.test(tb)$p.value
+  if (p_value <= 0.05) {
+    count = count + 1
+  }
+}
+count
+
 #chi-square test
 chisq.test(tb_cTm)
 chisq.test(tb_cTb)

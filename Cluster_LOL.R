@@ -46,11 +46,13 @@ Sup_df[,c(2:8)] <- scale(Sup_df[,c(2:8)])
 #h clustering
 library(cluster);library(NbClust);
 
+############################# MODIFY HERE #########################################
 # "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"
 NbClust_distance = "euclidean"
 
-# "centroid", "median", "mcquitty", "ward.D", "ward.D2", "single", "complete", "average"
+# "complete", "centroid", "median", "mcquitty", "ward.D", "ward.D2", "single", "average"
 hclust_method = "complete"
+###################################################################################
 
 #top
 nb <- NbClust(Top_df[,c(2:8)], distance=NbClust_distance, min.nc=2, max.nc=10, method=hclust_method, index="all")
@@ -220,7 +222,7 @@ clu_df[,c(2:8)] <- scale(clu_df[,c(2:8)])
 
 ds <- dist(clu_df, method="euclidean")
 hcst <- hclust(ds, method="complete")
-plot(hcst, labels=clu_df[,1], cex=0.8)
+# plot(hcst, labels=clu_df[,1], cex=0.8)
 
 nb <- NbClust(clu_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="kmeans", index="all")
 n <- nb$Best.nc[1]
@@ -231,3 +233,119 @@ kcluster_All<- cbind(clu_df,kc$cluster)
 kv_df_All <- list()
 kv_df_All[key] <- kcluster_All$`kc$cluster`
 
+library(ggplot2);library(dplyr);
+df <- read.csv(file = 'data/Roll_Data.csv')
+names(df) <- c("champ1", "champ2", "champ3", "lane", "gender", "born_year", "game_started_year", "MBTI")
+
+
+#######################preprocess data frame#######################
+ChampLaneMBTI_df <- df[,c(1, 2, 3, 4, 8)]
+ChampLaneMBTI <- data.frame()
+for (row in 1:nrow(ChampLaneMBTI_df)){
+  lane <- ChampLaneMBTI_df[row, "lane"]
+  mbti <- ChampLaneMBTI_df[row, "MBTI"]
+  M1 <- ChampLaneMBTI_df[row, "champ1"]
+  M2 <- ChampLaneMBTI_df[row, "champ2"]
+  M3 <- ChampLaneMBTI_df[row, "champ3"]
+  mbti1 <- substring(ChampLaneMBTI_df[row, "MBTI"],1,1)
+  mbti2 <- substring(ChampLaneMBTI_df[row, "MBTI"],2,2)
+  mbti3 <- substring(ChampLaneMBTI_df[row, "MBTI"],3,3)
+  mbti4 <- substring(ChampLaneMBTI_df[row, "MBTI"],4,4)
+  if (lane != "None") {
+    ChampLaneMBTI <- rbind(ChampLaneMBTI, c(lane, M1, M2, M3, mbti1, mbti2, mbti3, mbti4))
+  }
+}
+names(ChampLaneMBTI) <- c("lane", "champ1","champ2","champ3", "M", "B", "T", "I")
+#######################LANE & MBTI#######################
+LaneMBTI <- ChampLaneMBTI[,c(1,5,6,7,8)]
+#table lane, M, B, T, I
+tb_lm <- table(LaneMBTI$lane, LaneMBTI$M);tb_lb <- table(LaneMBTI$lane, LaneMBTI$B);tb_lt <- table(LaneMBTI$lane, LaneMBTI$T);tb_li <- table(LaneMBTI$lane, LaneMBTI$I);
+#chi-square test
+chisq.test(tb_lm)
+chisq.test(tb_lb)
+chisq.test(tb_lt)
+chisq.test(tb_li)
+
+
+#######################MOST CHAMPION & MBTI#######################
+ChampMBTI <- data.frame()
+
+for (row in 1:nrow(ChampLaneMBTI[,c(1,2,5,6,7,8)])){
+  champ1 <- ChampLaneMBTI[,c(1,2,5,6,7,8)][row, "champ1"]
+  keyChamp1 <- as.integer(champ1)
+  lane <- ChampLaneMBTI[,c(1,2,5,6,7,8)][row, "lane"]
+  mbti1 <- ChampLaneMBTI[,c(1,2,5,6,7,8)][row, "M"]
+  mbti2 <- ChampLaneMBTI[,c(1,2,5,6,7,8)][row, "B"]
+  mbti3 <- ChampLaneMBTI[,c(1,2,5,6,7,8)][row, "T"]
+  mbti4 <- ChampLaneMBTI[,c(1,2,5,6,7,8)][row, "I"]
+  if (mbti != "" & lane != "None"){
+    ChampMBTI <- rbind(ChampMBTI, c(champ1, mbti1, mbti2, mbti3, mbti4, kv_df_All[keyChamp1], lane))
+  }
+}
+names(ChampMBTI) <- c("champ1", "M", "B", "T", "I", "cluster", "lane")
+#table cluster, MBTI
+tb_cm <- table(ChampMBTI$cluster, ChampMBTI$M);tb_cb <- table(ChampMBTI$cluster, ChampMBTI$B);tb_ct <- table(ChampMBTI$cluster, ChampMBTI$T);tb_ci <- table(ChampMBTI$cluster, ChampMBTI$I);
+#chi-square test
+chisq.test(tb_cm)
+chisq.test(tb_cb)
+chisq.test(tb_ct)
+chisq.test(tb_ci)
+
+#######################Champ&line&MBTI by hclustering#######################
+ChampMBTI_TopH<-data.frame();ChampMBTI_JgH<-data.frame();ChampMBTI_MidH<-data.frame();ChampMBTI_BotH<-data.frame();ChampMBTI_SupH<-data.frame();
+
+
+for (row in 1:nrow(ChampMBTI)){
+  champ1 <- ChampMBTI[row, "champ1"]
+  keyChamp1 <- as.integer(champ1)
+  lane <- ChampMBTI[row, "lane"]
+  M <- ChampMBTI[row, "M"]
+  B <- ChampMBTI[row, "B"]
+  T <- ChampMBTI[row, "T"]
+  I <- ChampMBTI[row, "I"]
+  
+  if (lane == "TOP"){
+    ChampMBTI_TopH <- rbind(ChampMBTI_TopH, c(champ1, M, B, T, I, kv_df_TopH[keyChamp1], lane))
+  }
+  if (lane == "JUNGLE"){
+    ChampMBTI_JgH <- rbind(ChampMBTI_JgH, c(champ1, M, B, T, I, kv_df_JgH[keyChamp1], lane))
+  }
+  if (lane == "MID"){
+    ChampMBTI_MidH <- rbind(ChampMBTI_MidH, c(champ1, M, B, T, I, kv_df_MidH[keyChamp1], lane))
+  }
+  if (lane == "ADC"){
+    ChampMBTI_BotH <- rbind(ChampMBTI_BotH, c(champ1, M, B, T, I, kv_df_BotH[keyChamp1], lane))
+  }
+  if (lane == "SUPPORT"){
+    ChampMBTI_SupH <- rbind(ChampMBTI_SupH, c(champ1, M, B, T, I, kv_df_SupH[keyChamp1], lane))
+  }
+}
+names(ChampMBTI_TopH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_JgH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_MidH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_BotH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");names(ChampMBTI_SupH) <- c("champ1", "M", "B", "T", "I", "cluster", "lane");
+#table cluster, M,B,T,I
+tb_cTm <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$M);tb_cTb <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$B);tb_cTt <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$T);tb_cTi <- table(ChampMBTI_TopH$cluster, ChampMBTI_TopH$I);
+tb_cJm <- table(ChampMBTI_JgH$cluster, ChampMBTI_JgH$M);tb_cJb <- table(ChampMBTI_JgH$cluster, ChampMBTI_JgH$B);tb_cJt <- table(ChampMBTI_JgH$cluster, ChampMBTI_JgH$T);tb_cJi <- table(ChampMBTI_JgH$cluster, ChampMBTI_JgH$I);
+tb_cMm <- table(ChampMBTI_MidH$cluster, ChampMBTI_MidH$M);tb_cMb <- table(ChampMBTI_MidH$cluster, ChampMBTI_MidH$B);tb_cMt <- table(ChampMBTI_MidH$cluster, ChampMBTI_MidH$T);tb_cMi <- table(ChampMBTI_MidH$cluster, ChampMBTI_MidH$I);
+tb_cBm <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$M);tb_cBb <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$B);tb_cBt <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$T);tb_cBi <- table(ChampMBTI_BotH$cluster, ChampMBTI_BotH$I);
+tb_cSm <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$M);tb_cSb <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$B);tb_cSt <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$T);tb_cSi <- table(ChampMBTI_SupH$cluster, ChampMBTI_SupH$I);
+
+table_list = list(
+  tb_cTm, tb_cTb, tb_cTt, tb_cTi,
+  tb_cJm, tb_cJb, tb_cJt, tb_cJi,
+  tb_cMm, tb_cMb, tb_cMt, tb_cMi,
+  tb_cBm, tb_cBb, tb_cBt, tb_cBi,
+  tb_cSm, tb_cSb, tb_cSt, tb_cSi
+)
+
+count_01 = 0
+count_005 = 0
+for (tb in table_list) {
+  p_value = chisq.test(tb)$p.value
+  if (p_value <= 0.05) {
+    count_005 = count_005 + 1
+  }
+  if (p_value <= 0.1) {
+    count_01 = count_01 + 1
+  }
+}
+count_005
+count_01
