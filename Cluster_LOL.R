@@ -4,7 +4,8 @@ library(hash)
 
 #get data
 clu_df <- read.csv(file = 'data/lolchampion1201.csv')
-clu_df <- clu_df[,c(2,3,17,33:44)]
+colnames(clu_df)
+clu_df <- clu_df[,c(2,3,17,33:41)]
 key <- clu_df[,c(2)]
 Top_df <- data.frame();Jg_df <- data.frame();Mid_df <- data.frame();Bot_df <- data.frame();Sup_df <- data.frame();
 
@@ -32,23 +33,23 @@ for (row in 1:nrow(clu_df)){
 }
 
 Top_key <- Top_df[,c(2)];Jg_key <- Jg_df[,c(2)];Mid_key <- Mid_df[,c(2)];Bot_key <- Bot_df[,c(2)];Sup_key <- Sup_df[,c(2)]
-#scaleing
+#scaling
 Top_df <- Top_df[,c(1,3,7:12)]
 Jg_df <- Jg_df[,c(1,3,7:12)]
 Mid_df <- Mid_df[,c(1,3,7:12)]
 Bot_df <- Bot_df[,c(1,3,7:12)]
 Sup_df <- Sup_df[,c(1,3,7:12)]
 
+Top_df = Top_df[Top_df$id != 'Gnar',]
+Bot_df = Bot_df[Bot_df$id != 'Yasuo',]
+Bot_df = Bot_df[Bot_df$id != 'Senna',]
+Bot_df = Bot_df[Bot_df$id != 'Swain',]
+
 Top_df[,c(2:8)] <- scale(Top_df[,c(2:8)])
 Jg_df[,c(2:8)] <- scale(Jg_df[,c(2:8)])
 Mid_df[,c(2:8)] <- scale(Mid_df[,c(2:8)])
 Bot_df[,c(2:8)] <- scale(Bot_df[,c(2:8)])
 Sup_df[,c(2:8)] <- scale(Sup_df[,c(2:8)])
-
-Top_df = Top_df[Top_df$id != 'Gnar',]
-Bot_df = Bot_df[Bot_df$id != 'Yasuo',]
-Bot_df = Bot_df[Bot_df$id != 'Senna',]
-Bot_df = Bot_df[Bot_df$id != 'Swain',]
 
 #h clustering
 library(cluster);library(NbClust);
@@ -58,7 +59,7 @@ library(cluster);library(NbClust);
 NbClust_distance = "euclidean"
 
 # "complete", "centroid", "median", "mcquitty", "ward.D", "ward.D2", "single", "average"
-hclust_method = "complete"
+hclust_method = "ward.D2"
 ###################################################################################
 
 #top
@@ -123,6 +124,7 @@ n <- max(nb$Best.partition)
 kc <- kmeans(Mid_df[,c(2:8)], centers = n)
 kcluster_Mid<- cbind(Mid_df,kc$cluster)
 
+Bot_df
 nb <- NbClust(Bot_df[,c(2:8)], distance="euclidean", min.nc=2, max.nc=10, method="kmeans", index="all")
 n <- max(nb$Best.partition)
 kc <- kmeans(Bot_df[,c(2:8)], centers = n)
@@ -150,77 +152,29 @@ kv_df_BotH[Bot_key] <- hcluster_Bot$cluster
 kv_df_SupH[Sup_key] <- hcluster_Sup$cluster
 
 
-#######################put 10 in other cluster#######################
-i = 1
-for (e in kv_df_Top) {
-  if (is.null(e)) {
-    kv_df_Top[i] = 10
+#### Put 10 for champions not in any clusters ####
+add_dummy = function(df) {
+  i = 1
+  for (e in df) {
+    if (is.null(e)) {
+      df[i] = 10
+    }
+    i = i + 1
   }
-  i = i+1
+  df
 }
-i = 1
-for (e in kv_df_Jg) {
-  if (is.null(e)) {
-    kv_df_Jg[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_Mid) {
-  if (is.null(e)) {
-    kv_df_Mid[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_Bot) {
-  if (is.null(e)) {
-    kv_df_Bot[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_Sup) {
-  if (is.null(e)) {
-    kv_df_Sup[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_TopH) {
-  if (is.null(e)) {
-    kv_df_TopH[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_JgH) {
-  if (is.null(e)) {
-    kv_df_JgH[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_MidH) {
-  if (is.null(e)) {
-    kv_df_MidH[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_BotH) {
-  if (is.null(e)) {
-    kv_df_BotH[i] = 10
-  }
-  i = i+1
-}
-i = 1
-for (e in kv_df_SupH) {
-  if (is.null(e)) {
-    kv_df_SupH[i] = 10
-  }
-  i = i+1
-}
+
+kv_df_Top = add_dummy(kv_df_Top)
+kv_df_Jg = add_dummy(kv_df_Jg)
+kv_df_Mid = add_dummy(kv_df_Mid)
+kv_df_Bot = add_dummy(kv_df_Bot)
+kv_df_Sup = add_dummy(kv_df_Sup)
+
+kv_df_TopH = add_dummy(kv_df_TopH)
+kv_df_JgH = add_dummy(kv_df_JgH)
+kv_df_MidH = add_dummy(kv_df_MidH)
+kv_df_BotH = add_dummy(kv_df_BotH)
+kv_df_SupH = add_dummy(kv_df_SupH)
 
 
 ##########################all champion cluster##########################
@@ -391,29 +345,33 @@ chisq.test(merged_tables[["M"]])
 mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
        direction = "v",
        gp_varnames = gpar(fontsize = 14, fontface = 1),
-       gp_labels = gpar(fontsize = 6))
+       gp_labels = gpar(fontsize = 6),
+       gp_args = list(interpolate = c(0, 1, 2)))
 
 
 merged_tables[["B"]]
 chisq.test(merged_tables[["B"]])
-mosaic(merged_tables[["B"]], shade = TRUE, legend = TRUE,
+mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
        direction = "v",
        gp_varnames = gpar(fontsize = 14, fontface = 1),
-       gp_labels = gpar(fontsize = 6))
+       gp_labels = gpar(fontsize = 6),
+       gp_args = list(interpolate = c(0, 1, 2)))
 
 
 merged_tables[["T"]]
 chisq.test(merged_tables[["T"]])
-mosaic(merged_tables[["T"]], shade = TRUE, legend = TRUE,
+mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
        direction = "v",
        gp_varnames = gpar(fontsize = 14, fontface = 1),
-       gp_labels = gpar(fontsize = 6))
+       gp_labels = gpar(fontsize = 6),
+       gp_args = list(interpolate = c(0, 1, 2)))
 
 
 merged_tables[["I"]]
 chisq.test(merged_tables[["I"]])
-mosaic(merged_tables[["I"]], shade = TRUE, legend = TRUE,
+mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
        direction = "v",
        gp_varnames = gpar(fontsize = 14, fontface = 1),
-       gp_labels = gpar(fontsize = 6))
+       gp_labels = gpar(fontsize = 6),
+       gp_args = list(interpolate = c(0, 1, 2)))
 
