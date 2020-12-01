@@ -351,7 +351,7 @@ mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
 
 merged_tables[["B"]]
 chisq.test(merged_tables[["B"]])
-mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
+mosaic(merged_tables[["B"]], shade = TRUE, legend = TRUE,
        direction = "v",
        gp_varnames = gpar(fontsize = 14, fontface = 1),
        gp_labels = gpar(fontsize = 6),
@@ -360,7 +360,7 @@ mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
 
 merged_tables[["T"]]
 chisq.test(merged_tables[["T"]])
-mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
+mosaic(merged_tables[["T"]], shade = TRUE, legend = TRUE,
        direction = "v",
        gp_varnames = gpar(fontsize = 14, fontface = 1),
        gp_labels = gpar(fontsize = 6),
@@ -369,9 +369,8 @@ mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
 
 merged_tables[["I"]]
 chisq.test(merged_tables[["I"]])
-mosaic(merged_tables[["M"]], shade = TRUE, legend = TRUE,
+mosaic(merged_tables[["I"]], shade = TRUE, legend = TRUE,
        direction = "v",
        gp_varnames = gpar(fontsize = 14, fontface = 1),
        gp_labels = gpar(fontsize = 6),
        gp_args = list(interpolate = c(0, 1, 2)))
-
