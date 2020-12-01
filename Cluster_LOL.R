@@ -358,6 +358,7 @@ per_line_tables = hash()
 for (lane in c("TOP", "JUNGLE", "MID", "ADC", "SUPPORT")) {
   names(ChampMBTI_Cluster[[lane]]) <- c("champ", "M", "B", "T", "I", "cluster", "lane")
   per_line_tables[[lane]] = hash()
+  
   for (mbti_type in c("M", "B", "T", "I")) {
     temp_tb = table(ChampMBTI_Cluster[[lane]]$cluster, ChampMBTI_Cluster[[lane]][[mbti_type]])
     rownames(temp_tb) = lapply(rownames(temp_tb), function(x) paste(lane, x, sep="_"))
