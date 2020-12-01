@@ -32,24 +32,27 @@ for (row in 1:nrow(clu_df)){
   }
 }
 
-Top_key <- Top_df[,c(2)];Jg_key <- Jg_df[,c(2)];Mid_key <- Mid_df[,c(2)];Bot_key <- Bot_df[,c(2)];Sup_key <- Sup_df[,c(2)]
 #scaling
+Top_df = Top_df[Top_df$id != 'Gnar',]
+Bot_df = Bot_df[Bot_df$id != 'Yasuo',]
+Bot_df = Bot_df[Bot_df$id != 'Senna',]
+Bot_df = Bot_df[Bot_df$id != 'Swain',]
+
+Top_key <- Top_df[,c(2)];Jg_key <- Jg_df[,c(2)];Mid_key <- Mid_df[,c(2)];Bot_key <- Bot_df[,c(2)];Sup_key <- Sup_df[,c(2)]
+
 Top_df <- Top_df[,c(1,3,7:12)]
 Jg_df <- Jg_df[,c(1,3,7:12)]
 Mid_df <- Mid_df[,c(1,3,7:12)]
 Bot_df <- Bot_df[,c(1,3,7:12)]
 Sup_df <- Sup_df[,c(1,3,7:12)]
 
-Top_df = Top_df[Top_df$id != 'Gnar',]
-Bot_df = Bot_df[Bot_df$id != 'Yasuo',]
-Bot_df = Bot_df[Bot_df$id != 'Senna',]
-Bot_df = Bot_df[Bot_df$id != 'Swain',]
-
 Top_df[,c(2:8)] <- scale(Top_df[,c(2:8)])
 Jg_df[,c(2:8)] <- scale(Jg_df[,c(2:8)])
 Mid_df[,c(2:8)] <- scale(Mid_df[,c(2:8)])
 Bot_df[,c(2:8)] <- scale(Bot_df[,c(2:8)])
 Sup_df[,c(2:8)] <- scale(Sup_df[,c(2:8)])
+
+
 
 #h clustering
 library(cluster);library(NbClust);
@@ -286,9 +289,11 @@ for (row in 1:nrow(ChampLaneMBTI)){
   # real_clusters = list()
   
   for (i in 1:3) {
-    if (as.integer(clusters[i]) != 10) {
-      ChampMBTI_Cluster[[lane]] = rbind(ChampMBTI_Cluster[[lane]], c(champs[i], M, B, T, I, clusters[i], lane))
-      # real_clusters = rbind(real_clusters, clusters[i])
+    if (!is.null(clusters[[i]])) {
+      if (clusters[[i]] != 10) {
+        ChampMBTI_Cluster[[lane]] = rbind(ChampMBTI_Cluster[[lane]], c(champs[i], M, B, T, I, clusters[i], lane))
+        # real_clusters = rbind(real_clusters, clusters[i])
+      }
     }
   }
   if (length(unique(clusters)) == 1) {
@@ -374,3 +379,4 @@ mosaic(merged_tables[["I"]], shade = TRUE, legend = TRUE,
        gp_varnames = gpar(fontsize = 14, fontface = 1),
        gp_labels = gpar(fontsize = 6),
        gp_args = list(interpolate = c(0, 1, 2)))
+
