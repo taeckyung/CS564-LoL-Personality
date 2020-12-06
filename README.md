@@ -2,7 +2,8 @@
 
 ## Data Collection & Preprocessing With Python
 
-- `collect_rank_match.py`, `preprocess.py`, `prepare-analysis.py`
+- Data Collection/Preprocessing Code: `collect_rank_match.py`, `preprocess.py`, `prepare-analysis.py`
+- Datasets: `responses.csv`, `all_tiers.csv`, `all_matches.csv`
 - Collect League of legends player statistics collection via Riot API.
 - Preprocess lane and role information to generate five lane information.
 
