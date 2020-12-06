@@ -2,6 +2,7 @@
 
 ## Data Collection & Preprocessing With Python
 
+- `collect_rank_match.py, preprocess.py, prepare-analysis.py`
 - Collect League of legends player statistics collection via Riot API.
 - Preprocess lane and role information to generate five lane information.
 
