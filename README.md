@@ -16,9 +16,13 @@
 
 *Mainly written by Giyoung Byun and Soohwan Lim*
 
-## Preprocessing Survey data & R analysis
+## Survay Data Preprocessing & R analysis
 
+- Preprocessing code: 'prepare_analysis.py'
+- Datasets: 'Roll_Data.csv'
 - Combine collected log data with survey results
+
+- R analysis code: 'Data Analysis LoL and MBTI.R','Cluster_LoL_arbitrary.R' 
 - R analysis based on clustering results and preprocessed data
 
 *Mainly written by Seojin Kim and Soohwan Lim*
