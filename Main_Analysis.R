@@ -261,11 +261,11 @@ key_value_hash = hash()
 key_value_hash[["TOP"]] = kv_df_TopH
 key_value_hash[["JUNGLE"]] = kv_df_JgH
 key_value_hash[["MID"]] = kv_df_MidH
-key_value_hash[["ADC"]] = kv_df_BotH
+key_value_hash[["BOTTOM"]] = kv_df_BotH
 key_value_hash[["SUPPORT"]] = kv_df_SupH
 
 ChampMBTI_Cluster = hash()
-for (lane in c("TOP", "JUNGLE", "MID", "ADC", "SUPPORT")) {
+for (lane in c("TOP", "JUNGLE", "MID", "BOTTOM", "SUPPORT")) {
   ChampMBTI_Cluster[[lane]] = data.frame()
 }
 
@@ -314,7 +314,7 @@ cluster_agree_3
 
 per_line_tables = hash()
 
-for (lane in c("TOP", "JUNGLE", "MID", "ADC", "SUPPORT")) {
+for (lane in c("TOP", "JUNGLE", "MID", "BOTTOM", "SUPPORT")) {
   names(ChampMBTI_Cluster[[lane]]) <- c("champ", "M", "B", "T", "I", "cluster", "lane")
   per_line_tables[[lane]] = hash()
   
@@ -336,7 +336,7 @@ for (mbti_type in c("M", "B", "T", "I")) {
   merged_tables[[mbti_type]] = rbind(per_line_tables[["TOP"]][[mbti_type]],
                                 per_line_tables[["JUNGLE"]][[mbti_type]],
                                 per_line_tables[["MID"]][[mbti_type]],
-                                per_line_tables[["ADC"]][[mbti_type]],
+                                per_line_tables[["BOTTOM"]][[mbti_type]],
                                 per_line_tables[["SUPPORT"]][[mbti_type]]
                                 )
 }
