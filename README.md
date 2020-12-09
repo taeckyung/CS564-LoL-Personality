@@ -12,7 +12,7 @@
 ## Clustering Champion Data
 
 - Collect League of legends 152 different champions data in JSON Format via Riot API and transform it into a data frame.(Code: `lolchampions.py`)
-- Clustering champions with Hierarchical Clustering.
+- Clustering champions with Hierarchical Clustering: `Main_Analysis.R`.
 
 *Mainly written by Giyoung Byun and Soohwan Lim*
 
