@@ -11,8 +11,8 @@
 
 ## Clustering Champion Data
 
-- Collect League of legends player statistics collection via Riot API.(Code: `lolchampions.py`)
-- Preprocess lane and role information to generate five lane information.
+- Collect League of legends 152 different champions data in JSON Format via Riot API and transform it into a data frame.(Code: `lolchampions.py`)
+- Clustering champions with Hierarchical Clustering.
 
 *Mainly written by Giyoung Byun and Soohwan Lim*
 
