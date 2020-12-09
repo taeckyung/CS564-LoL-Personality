@@ -18,11 +18,11 @@
 
 ## Survay Data Preprocessing & R analysis
 
-- Preprocessing code: 'prepare_analysis.py'
-- Datasets: 'Roll_Data.csv'
+- Preprocessing code: `prepare_analysis.py`
+- Datasets: `Roll_Data.csv`
 - Combine collected log data with survey results
 
-- R analysis code: 'Data Analysis LoL and MBTI.R','Cluster_LoL_arbitrary.R' 
-- R analysis based on clustering results and preprocessed data
+- R analysis code: `Data Analysis LoL and MBTI.R`,`Cluster_LoL_arbitrary.R` 
+- R analysis of MBTI and LoL, based on clustering results and preprocessed data
 
 *Mainly written by Seojin Kim and Soohwan Lim*
