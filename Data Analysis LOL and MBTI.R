@@ -4,9 +4,9 @@ names(df) <- c("champ1", "champ2", "champ3", "lane", "gender", "born_year", "gam
 #######################SURVEY STATISTICS#######################
 #lane, piegraph
 dflane <- as.data.frame(table(df$lane))
-dflane$Var1 = lapply(dflane$Var1, as.character)
-dflane[dflane == "ADC"] = "BOTTOM"
-dflane = dflane[c(4, 2, 3, 1, 4), ]
+dflane = dflane[c(5, 2, 3, 1, 4), ]
+dflane$Var1 <- factor(dflane$Var1, levels = dflane$Var1)
+row.names(dflane) = NULL
 
 ggplot(dflane, aes(x="", y=dflane$Freq, fill=dflane$Var1)) +
          geom_bar(stat="identity", width=1, color="white") +
@@ -136,7 +136,7 @@ for (row in 1:nrow(ChampMBTI)){
   if (lane == "MID"){
     ChampMBTI_MidH <- rbind(ChampMBTI_MidH, c(champ1, M, B, T, I, kv_df_MidH[keyChamp1], lane))
   }
-  if (lane == "ADC"){
+  if (lane == "BOTTOM"){
     ChampMBTI_BotH <- rbind(ChampMBTI_BotH, c(champ1, M, B, T, I, kv_df_BotH[keyChamp1], lane))
   }
   if (lane == "SUPPORT"){
