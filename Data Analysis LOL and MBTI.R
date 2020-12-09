@@ -4,6 +4,9 @@ names(df) <- c("champ1", "champ2", "champ3", "lane", "gender", "born_year", "gam
 #######################SURVEY STATISTICS#######################
 #lane, piegraph
 dflane <- as.data.frame(table(df$lane))
+dflane$Var1 = lapply(dflane$Var1, as.character)
+dflane[dflane == "ADC"] = "BOTTOM"
+dflane = dflane[c(4, 2, 3, 1, 4), ]
 
 ggplot(dflane, aes(x="", y=dflane$Freq, fill=dflane$Var1)) +
          geom_bar(stat="identity", width=1, color="white") +
@@ -12,6 +15,12 @@ ggplot(dflane, aes(x="", y=dflane$Freq, fill=dflane$Var1)) +
   labs(fill = "Lane")+
   xlab("") +
   ylab("")
+ggplot(dflane, aes(x=dflane$Var1, y=dflane$Freq))+
+  geom_bar(stat = "identity", fill="steelblue")+
+  xlab("Most Lane") +
+  ylab("Freq")+
+  theme_bw() +
+  theme(text = element_text(size = 15))
 #gender
 table(df$gender)
 #born_year, bargraph
@@ -25,9 +34,11 @@ ggplot(dfborn, aes(x=dfborn$Var1, y=dfborn$Freq))+
 dfgamestart <- as.data.frame(table(df$game_started_year))
 ggplot(dfgamestart, aes(x=dfgamestart$Var1, y=dfgamestart$Freq))+
   geom_bar(stat = "identity", fill="steelblue")+
-  labs(title = "Game Started Year Bargraph")+
   xlab("Game Started Year") +
-  ylab("Freq")
+  ylab("Freq")+
+  theme_bw() +
+  theme(text = element_text(size = 15))
+  
 #MBTI, bargraph
 dfMBTI <- as.data.frame(table(df$MBTI))
 ggplot(dfMBTI, aes(x=dfMBTI$Var1, y=dfMBTI$Freq))+

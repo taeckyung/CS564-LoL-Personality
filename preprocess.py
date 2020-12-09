@@ -48,7 +48,7 @@ def get_real_lane(row):
         if row['role'] == 'DUO_SUPPORT':
             return 'SUPPORT'
         elif row['role'] == 'DUO_CARRY':
-            return 'ADC'
+            return 'BOTTOM'
         else:
             return 'None'
 
