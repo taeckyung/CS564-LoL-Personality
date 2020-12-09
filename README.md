@@ -16,7 +16,7 @@
 
 *Mainly written by Giyoung Byun and Soohwan Lim*
 
-## Survay Data Preprocessing & R analysis
+## Survey Data Preprocessing & R analysis
 
 - Preprocessing code: `prepare_analysis.py`
 - Datasets: `Roll_Data.csv`
